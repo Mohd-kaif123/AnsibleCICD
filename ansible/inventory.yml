@@ -1,6 +1,10 @@
-all:
-  hosts:
-    server1:
-      ansible_host: "{{ host_placeholder }}"
+all:    # ye ek group ka naam hai, ansible me servers ko group me divide kiya jata hai.,Is group ke andar jitne bhi servers honge, sab "all" group ka part honge.
+  hosts:    # ye batata hai: is group me ke andar kaun-kaun se server hai.
+    server1:  # ye server ka naam hai, ye actual hostname nahi hai, ye sirf Ansible ka nickname hai, ham likh sakte hai ubuntu_server, aws_server,etc
+      ansible_host: "{{ host_placeholder }}"  # ye sabse imp line hai, yaha actual server ka IP address ya DNS name hota hai. e.g:ansible_host: 13.233.44.20.  
+              # lekin hamne likha hai ansible_host: "{{ host_placeholder }}"  ye actual IP nahi hai ye ek place holder hai
+              # Placeholder Kyu?  GitHub Workflow me tumne likha tha: sed -i "s/{{ host_placeholder }}/${{ secrets.HOST }}/" ansible/inventory.yml
+              # Iska matlab:- Before- ansible_host: "{{ host_placeholder }}" , Github Secret: host 13.233.50.10,  After:- ansible_host: "13.233.50.10"
+              # Matlab Workflow automatically IP replace kar deta hai.
       ansible_user: "{{ user_placeholder }}"
       ansible_ssh_private_key_file: ~/.ssh/id_rsa

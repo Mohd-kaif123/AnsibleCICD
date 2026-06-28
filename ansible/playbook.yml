@@ -1,17 +1,17 @@
----
-- name: deploy my app
-  hosts: all
-  become: true
+---    # Ye YAML document ka start batata hai.,Jaise Python me file start hoti hai import os waise hi yaml me ---, Ye optional bhi hai, lekin industry me likhte hain.
+- name: deploy my app   # Ye play ka naam hai, Execution ke time screen pe dikhega e.g PLAY [deploy my app]  ye sirf display name hai.
+  hosts: all      # ye bahut imp parrt hai, ansible puch raha hai mai kis server pe ye kaam karo, inventory file me jo hosts hote hai unme se kis per run karna hai.
+  become: true    # ye bhi imp hai, linux me normal user har kaam nahi kar sakta, islye become true karte hai taki kuch bhi install aur permission change kar sake
 
-  tasks:
-    - name: install nginx
-      apt:
-        name: nginx
-        state: present
-        update_cache: yes
+  tasks:    # ab actual kaam shuru hota hai, ek playbook me bahut task ho sakta hai e.g, Task 1, Task 2,etc, ye ek ke baad ek execute hota hai
+    - name: install nginx   # task naam hai ye
+      apt:  # ye ansible ka module hai, module means ready-made function. jaise python me print()
+        name: nginx  # jo install karna hai uska naam 
+        state: present  # ye bahut imp keyword hai, ansible hamesa desired state maintain karta hai, matlab mujhe package installed chaiye., agar already installed hai tu nothing., agar nahi hai tu install.
+        update_cache: yes   # update_cache: yes ya sudo apt update ke barabar hai, without this kabhi package nahi milta.
 
     - name: Start nginx
-      service:
-        name: nginx
-        state: started
-        enabled: yes
+      service:  # ye linux services control karta hai., jaise manually sudo systemctl start nginx.
+        name: nginx  # jo service control karni hai uska naam
+        state: started    # mean: start service, like sudo systemctl start nginx
+        enabled: yes     # sirf abhi ke liye start, restart hone ke baad server band hojaega
