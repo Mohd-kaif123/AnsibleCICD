@@ -1,37 +1,40 @@
 name: Deploy With Ansible
 
-on: 
-  push:
+on:        # Ye sabse imp keyword hai ( mean workflow kab chalega)
+  push:    # jab bhi ham git push origin main karenge ru workflow, 
+    branches: [ "main" ]  #  automatically start ho jayega
+  pull_request:           # Ye tab chalega jab koi New Pull Request banaega
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+  workflow_dispatch:   # ye bahut usefull hai, ye button enable karta hai github me
 
-jobs:
-    deploy:
-        runs-on: ubuntu-latest
-
-        steps:
-          - name: checkout Repo
-            uses: actions/checkout@v4
-        
+jobs: # ek work flow ke andar bahut jobs ho sakti hai (e.g: job1, job2, job3)
+    deploy: # ye job ka naam hai, ham kuch bhi naam rakh sakte hai
+        runs-on: ubuntu-latest  # ye imp line hai, github hamare laptop pe cmd execute nahi karta. 
+            # wo apni taraf ek tempeoroy VM banata hai, har workflow ke liye naya ubuntu server banta hai, isliye ham har baar python install kar rahe hai
+        steps: # job ke andar multiple step hote e.g: step1, step2, step3,etc.
+          - name: checkout Repo   # ye display name hai sirf
+            uses: actions/checkout@v4 # ye bahut famous action hai, ye hamara github repo clone karta hai
+                      # Socho GitHub VM banata hai, Us VM me tumhara code hi nahi hai, To pehle:- git clone karna padta hai.
           - name: Setup Python and Ansible
             run: |
                 sudo apt update
                 sudo apt install python3-pip -y 
                 pip3 install ansible
-
+          # Ye GitHub Secret se private key nikal kar id_rsa file me likhta hai.
+          # Ye server ka fingerprint save karta hai, Normally pehli baar login karte waqt aata hai
+          # Are you sure you want to continue connecting? , GitHub Actions me koi insaan "yes" nahi type karega.
+          # Isliye pehle hi fingerprint save kar dete hain.
           - name: Setup Python and Ansible
             run: |
                 mkdir -p ~/.ssh
-                echo "${{ secrets.MY_ANSIBLE_KEY }}" > ~/.ssh/id_rsa
-                chmod 600 ~/.ssh/id_rsa
+                echo "${{ secrets.MY_ANSIBLE_KEY }}" > ~/.ssh/id_rsa  
+                chmod 600 ~/.ssh/id_rsa  # SSH strict permissions mangta hai.
                 ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
-          - name: Replace Placeholders in my inventory
+          - name: Replace Placeholders in my inventory     
             run: |
-                sed -i "s/{{ host_placeholder }}/${{ secrets.HOST }}/" ansible/inventory.yml
-                sed -i "s/{{ user_placeholder }}/${{ secrets.USER }}/" ansible/inventory.yml
+                sed -i "s/{{ host_placeholder }}/${{ secrets.HOST }}/" ansible/inventory.yml  # placeholders ko Workflow inhe replace karta hai, repace ke baad ansible_host: 13.233.xxx.xxx
+                sed -i "s/{{ user_placeholder }}/${{ secrets.USER }}/" ansible/inventory.yml  # ye user name ko replace karta hai
           - name: Run Ansible Playbook
             run: |
-                ansible-playbook -i ansible/inventory.yml ansible/playbook.yml
+                ansible-playbook -i ansible/inventory.yml ansible/playbook.yml # ye cmd chalane per actual deployment hota hai jaise ham manually ye run karte the
